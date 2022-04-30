@@ -1,26 +1,31 @@
 // allows you to access environment variables you created in .env
 require("dotenv").config();
-
+const mongoose = require("mongoose");
 const express = require("express");
-
 const app = express();
+
+// import routes
+const authRoute = require("./routes/auth");
 
 //middlewear that allows you pass json
 app.use(express.json());
 app.use(express.urlencoded());
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("fullstack express server");
 });
 
-app.post("/name", (req, res) => {
-  if (req.body.name) {
-    return res.json({ name: req.body.name });
-  } else {
-    return res.status(400).json({ error: "no name provided" });
-  }
-});
+app.use("/api/auth", authRoute);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("connected to db");
+
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
