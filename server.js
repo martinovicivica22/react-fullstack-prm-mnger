@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 // import routes
 const authRoute = require("./routes/auth");
@@ -12,6 +13,12 @@ const toDosRoute = require("./routes/todos");
 //middlewear that allows you pass json
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(express.static(path.resolve(__dirname, "./client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
+
 // allows to use and read cookies during requests
 app.use(cookieParser());
 
